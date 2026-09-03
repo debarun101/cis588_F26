@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="CIS 588: Neural Computing — Fall 2026 graduate course on building and understanding neural networks from scratch in Python and NumPy." />
+  <title>CIS 588: Neural Computing | Fall 2026</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface-2: #f0f3f8;
+      --text: #172033;
+      --muted: #5d687c;
+      --line: #dbe1ea;
+      --accent: #284c7e;
+      --accent-2: #17335b;
+      --max: 1080px;
+      --radius: 12px;
+      --shadow: 0 8px 24px rgba(23, 32, 51, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    a { color: inherit; }
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(247, 248, 251, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(219, 225, 234, 0.8);
+    }
+
+    nav {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .hero {
+      padding: 64px 0 46px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--accent-2);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 18px 0 18px;
+      font-size: clamp(2.35rem, 5vw, 4.6rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1.08rem, 2vw, 1.32rem);
+    }
+
+    .hero-copy strong { color: var(--text); }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 17px;
+      border-radius: 11px;
+      text-decoration: none;
+      font-weight: 760;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .quick-info {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .quick-item {
+      padding: 21px;
+      border-right: 1px solid var(--line);
+    }
+    .quick-item:last-child { border-right: 0; }
+
+    .label {
+      display: block;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.73rem;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .value { font-weight: 800; }
+
+    section { padding: 58px 0; }
+    section.alt {
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.75fr 1.25fr;
+      gap: 42px;
+      align-items: start;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.9rem, 3vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 18px;
+    }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 24px;
+    }
+
+    .alt .card { background: var(--bg); }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .number {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--surface-2);
+      font-weight: 850;
+      margin-bottom: 17px;
+      color: var(--accent-2);
+    }
+
+    ul.clean {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    ul.clean li {
+      padding-left: 28px;
+      position: relative;
+    }
+
+    ul.clean li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    .topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .topic {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 0.93rem;
+      font-weight: 680;
+    }
+
+    .cta {
+      margin: 18px 0 70px;
+      padding: 34px;
+      background: var(--accent-2);
+      color: white;
+      border-radius: calc(var(--radius) + 4px);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .cta h2 { font-size: clamp(1.7rem, 3vw, 2.7rem); }
+    .cta p { color: rgba(255,255,255,.78); margin: 9px 0 0; }
+    .cta .button { background: white; border-color: white; color: var(--accent-2); }
+
+    footer {
+      padding: 26px 0 42px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      background: var(--surface-2);
+      border-radius: 8px;
+      color: var(--muted);
+    }
+
+
+    .slide-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .slide-card {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 10px 28px rgba(23, 32, 51, 0.06);
+    }
+
+    .slide-card a {
+      display: block;
+      text-decoration: none;
+    }
+
+    .slide-frame {
+      aspect-ratio: 16 / 9;
+      background: var(--surface-2);
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .slide-frame img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      background: white;
+      transition: transform .18s ease;
+    }
+
+    .slide-card a:hover img { transform: scale(1.015); }
+
+    .slide-caption {
+      padding: 15px 17px 17px;
+    }
+
+    .slide-caption strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.98rem;
+    }
+
+    .slide-caption span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .materials-note {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      place-items: center;
+      padding: 28px;
+      background: rgba(10, 17, 30, 0.88);
+    }
+
+    .lightbox.open { display: grid; }
+
+    .lightbox img {
+      max-width: min(1200px, 94vw);
+      max-height: 88vh;
+      border-radius: 10px;
+      box-shadow: 0 20px 70px rgba(0,0,0,.45);
+      background: white;
+    }
+
+    .lightbox button {
+      position: fixed;
+      top: 18px;
+      right: 20px;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 999px;
+      background: white;
+      color: #172033;
+      font-size: 1.35rem;
+      cursor: pointer;
+    }
+
+
+    .card { box-shadow: none; }
+    .topic { border-radius: 8px; background: #fff; }
+    .resource-strip {
+      margin: 10px 0 64px;
+      padding: 26px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+    }
+    .resource-strip h2 { font-size: 1.6rem; margin-bottom: 6px; }
+    .resource-strip p { margin: 0; color: var(--muted); }
+
+    @media (max-width: 780px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 58px; }
+      .quick-info { grid-template-columns: repeat(2, 1fr); }
+      .quick-item:nth-child(2) { border-right: 0; }
+      .quick-item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .section-head { grid-template-columns: 1fr; gap: 14px; }
+      .grid-2, .grid-3, .slide-gallery { grid-template-columns: 1fr; }
+      .resource-strip { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .wrap { width: min(var(--max), calc(100% - 26px)); }
+      .quick-info { grid-template-columns: 1fr; }
+      .quick-item { border-right: 0; border-bottom: 1px solid var(--line); }
+      .quick-item:last-child { border-bottom: 0; }
+      .hero-actions .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Main navigation">
+        <a class="brand" href="#top">CIS 588 · Neural Computing</a>
+        <div class="nav-links">
+          <a href="#about">About</a>
+          <a href="#learn">What you'll learn</a>
+          <a href="#samples">Sample materials</a>
+          <a href="#topics">Topics</a>
+          <a href="#details">Details</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="wrap">
+      <section class="hero">
+        <span class="eyebrow">Fall 2026 · Graduate Course</span>
+        <h1>Build a deeper understanding of neural networks.</h1>
+        <p class="hero-copy">
+          Neural-network libraries make it easy to build models quickly, but they can hide the ideas that make those models work.
+          <strong>CIS 588: Neural Computing</strong> focuses on those underlying ideas by having students implement the core components themselves.
+        </p>
+
+        <div class="hero-actions">
+          <a class="button primary" href="#details">Course information</a>
+          <a class="button" href="syllabus.pdf">View syllabus</a>
+        </div>
+
+        <div class="quick-info" aria-label="Course quick facts">
+          <div class="quick-item">
+            <span class="label">Course</span>
+            <span class="value">CIS 588</span>
+          </div>
+          <div class="quick-item">
+            <span class="label">When</span>
+            <span class="value">MWF · 1:00–1:50 p.m.</span>
+          </div>
+          <div class="quick-item">
+            <span class="label">Where</span>
+            <span class="value">DION 311</span>
+          </div>
+          <div class="quick-item">
+            <span class="label">Format</span>
+            <span class="value">In person</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section id="about" class="alt">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>From intuition to implementation.</h2>
+          <p class="lead">
+            This is a hands-on course where you will build and train neural networks entirely from scratch in Python.
+            Starting from a single neuron, you will implement forward and backward propagation yourself using NumPy,
+            work through the mathematics behind the ideas, and code the techniques that power modern AI systems.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="number">1</div>
+            <h3>Start with intuition</h3>
+            <p>Develop a clear mental model of what each concept is doing and why it matters.</p>
+          </div>
+          <div class="card">
+            <div class="number">2</div>
+            <h3>Understand the concept</h3>
+            <p>Connect the intuition to the formal ideas used in neural-network training.</p>
+          </div>
+          <div class="card">
+            <div class="number">3</div>
+            <h3>Work through the mathematics</h3>
+            <p>Use gradients, derivatives, and the chain rule to understand learning at a deeper level.</p>
+          </div>
+          <div class="card">
+            <div class="number">4</div>
+            <h3>Implement it in Python</h3>
+            <p>Translate each idea into working NumPy code so you can see exactly how the pieces fit together.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="learn">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>What you'll learn</h2>
+          <p class="lead">
+            By the end of the semester, you should be able to move beyond using a framework and explain how the
+            machinery underneath it actually works.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <ul class="clean">
+              <li>Build and train multi-layer neural networks from scratch using NumPy.</li>
+              <li>Implement forward and backward propagation using gradients and the chain rule.</li>
+              <li>Apply neural networks to real-world problems through hands-on course assignments.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <ul class="clean">
+              <li>Compare optimization methods including ADAM, Adagrad, RMSProp, and Momentum.</li>
+              <li>Use regularization techniques including L1/L2 and dropout.</li>
+              <li>Understand the structure and applications of common deep-learning architectures.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="samples">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Sample course materials</h2>
+          <p class="lead">
+            A few lecture slides are included to illustrate how the course connects intuition,
+            mathematics, and implementation. Click any slide to view it at full size.
+          </p>
+        </div>
+        <div class="slide-gallery" id="slideGallery">
+          <figure class="slide-card" data-slide>
+            <a href="slides/sample-slide-1.png" class="slide-link">
+              <div class="slide-frame"><img src="slides/sample-slide-1.png" alt="CIS 588 sample lecture slide 1" loading="lazy"></div>
+              <figcaption class="slide-caption"><strong>Concept and intuition</strong><span>Representative lecture material</span></figcaption>
+            </a>
+          </figure>
+          <figure class="slide-card" data-slide>
+            <a href="slides/sample-slide-2.png" class="slide-link">
+              <div class="slide-frame"><img src="slides/sample-slide-2.png" alt="CIS 588 sample lecture slide 2" loading="lazy"></div>
+              <figcaption class="slide-caption"><strong>Mathematical foundations</strong><span>Representative lecture material</span></figcaption>
+            </a>
+          </figure>
+          <figure class="slide-card" data-slide>
+            <a href="slides/sample-slide-3.png" class="slide-link">
+              <div class="slide-frame"><img src="slides/sample-slide-3.png" alt="CIS 588 sample lecture slide 3" loading="lazy"></div>
+              <figcaption class="slide-caption"><strong>NumPy implementation</strong><span>Representative lecture material</span></figcaption>
+            </a>
+          </figure>
+          <figure class="slide-card" data-slide>
+            <a href="slides/sample-slide-4.png" class="slide-link">
+              <div class="slide-frame"><img src="slides/sample-slide-4.png" alt="CIS 588 sample lecture slide 4" loading="lazy"></div>
+              <figcaption class="slide-caption"><strong>Training and optimization</strong><span>Representative lecture material</span></figcaption>
+            </a>
+          </figure>
+        </div>
+        <p class="materials-note">The complete lecture materials are provided to enrolled students.</p>
+      </div>
+    </section>
+
+    <section id="topics" class="alt">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Topics</h2>
+          <p class="lead">
+            The course progresses from the basic building blocks of a neural network to practical techniques that
+            make modern networks train effectively.
+          </p>
+        </div>
+
+        <div class="topics" aria-label="Course topics">
+          <span class="topic">Neurons & layers</span>
+          <span class="topic">Activation functions</span>
+          <span class="topic">Forward propagation</span>
+          <span class="topic">Loss functions</span>
+          <span class="topic">Backpropagation</span>
+          <span class="topic">Gradients & chain rule</span>
+          <span class="topic">Gradient descent</span>
+          <span class="topic">Momentum</span>
+          <span class="topic">Adagrad</span>
+          <span class="topic">RMSProp</span>
+          <span class="topic">ADAM</span>
+          <span class="topic">L1 / L2 regularization</span>
+          <span class="topic">Dropout</span>
+          <span class="topic">Deep-learning architectures</span>
+          <span class="topic">Applied assignments</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Why this course?</h2>
+          <p class="lead">
+            Frameworks make neural networks easy to use. This course focuses on the understanding that transfers
+            across frameworks, research problems, and technical roles.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>Build real understanding</h3>
+            <p>See how neural networks learn instead of treating training as a sequence of library calls.</p>
+          </div>
+          <div class="card">
+            <h3>Strengthen your foundation</h3>
+            <p>Connect implementation to the mathematics behind optimization, gradients, and model behavior.</p>
+          </div>
+          <div class="card">
+            <h3>Prepare for modern AI work</h3>
+            <p>Develop knowledge that can transfer to machine learning, deep learning, research, and computational work.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="details" class="alt">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Course information</h2>
+          <p class="lead">
+            A graduate-level, in-person course for students who want a deeper technical understanding of neural networks.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>CIS 588: Neural Computing</h3>
+            <p>
+              <strong>Semester:</strong> Fall 2026<br />
+              <strong>Meeting:</strong> Mondays, Wednesdays, and Fridays, 1:00–1:50 p.m.<br />
+              <strong>Location:</strong> DION 303<br />
+              <strong>Format:</strong> In person
+            </p>
+          </div>
+          <div class="card">
+            <h3>Before you enroll</h3>
+            <p>
+              
+              <strong>Instructor:</strong> Dr. Debarun Das<br />
+              <strong>Email:</strong> <a href="mailto:ddas2@umassd.edu">your.email@university.edu</a>
+            </p>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Who is this course for?</strong>
+          Graduate students interested in AI, machine learning, data-driven methods, or computational research,
+          including students from engineering disciplines outside CIS.
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="resource-strip">
+        <div>
+          <h2>Course resources</h2>
+          <p>Review the syllabus or contact the instructor with questions about the course or prerequisites.</p>
+        </div>
+        <div class="hero-actions" style="margin-top:0">
+          <a class="button" href="syllabus.pdf">View syllabus</a>
+          <a class="button" href="mailto:ddas2@umassd.edu">Contact instructor</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      CIS 588: Neural Computing · Fall 2026
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button type="button" id="lightboxClose" aria-label="Close slide preview">×</button>
+    <img id="lightboxImage" alt="Full-size sample course slide">
+  </div>
+
+  <script>
+    (function () {
+      const section = document.getElementById('samples');
+      const cards = Array.from(document.querySelectorAll('[data-slide]'));
+      const gallery = document.getElementById('slideGallery');
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImage = document.getElementById('lightboxImage');
+      const closeButton = document.getElementById('lightboxClose');
+
+      let checked = 0;
+      let available = 0;
+
+      cards.forEach(card => {
+        const img = card.querySelector('img');
+        const link = card.querySelector('.slide-link');
+
+        function finish(ok) {
+          checked += 1;
+          if (ok) {
+            available += 1;
+          } else {
+            card.remove();
+          }
+          if (checked === cards.length && available === 0 && section) {
+            section.style.display = 'none';
+          }
+        }
+
+        if (img.complete) {
+          finish(img.naturalWidth > 0);
+        } else {
+          img.addEventListener('load', () => finish(true), { once: true });
+          img.addEventListener('error', () => finish(false), { once: true });
+        }
+
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          lightboxImage.src = link.getAttribute('href');
+          lightbox.classList.add('open');
+          lightbox.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      function closeLightbox() {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        lightboxImage.removeAttribute('src');
+      }
+
+      closeButton.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', function (event) {
+        if (event.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closeLightbox();
+      });
+    })();
+  </script>
+
+</body>
+</html>
